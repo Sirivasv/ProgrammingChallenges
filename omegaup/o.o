@@ -1,0 +1,237 @@
+#include "hoc.h" 
+#include <stdio.h>
+#include <ctype.h>
+#include <malloc.h>
+#include <string.h>
+#include <stdlib.h>
+#include "y.tab.h"
+
+#define NSTACK 256
+static  NodoArb* stack[NSTACK];  
+static  NodoArb* *stackp; 
+ 
+#define NPROG   2000
+Inst    prog[NPROG];    
+Inst    *progp;         
+Inst    *pc;	
+
+int symid = 0;
+int tot = 0;
+
+initcode()       {
+progp = prog;
+stackp = stack;
+}
+
+push(NodoArb* d)	
+{
+if (stackp >= &stack[NSTACK]) {
+puts("Stack Overflow");
+
+}
+
+*(stackp++) = d;
+}
+
+
+NodoArb* pop( )     
+{
+if (stackp <= stack) {
+puts("Stack Underflow");
+
+}
+return  *(--stackp);
+}
+
+
+
+
+
+adc( )	 
+{	
+	NodoArb* nvo;
+	nvo = (NodoArb*)malloc(sizeof(NodoArb));
+	if(!nvo) {
+		puts("no hay memoria para crear NodoL");
+	}
+	nvo->der = NULL;
+	nvo->izq = NULL;
+	nvo->value = ((char *)*pc++);
+	nvo->type = 0;
+	push(nvo);
+}
+
+adv()	
+{
+NodoArb *nvo;
+nvo = (NodoArb *)malloc(sizeof(NodoArb));
+if(!nvo) {
+	puts("no hay memoria para crear NodoL");
+}
+nvo->der = NULL;
+nvo->izq = NULL;
+
+int lim = strlen((char*) *pc) + 1;
+char *myop = (char *) malloc(sizeof (char) * lim);
+
+int i;
+for (i = 0; i < lim; ++i) myop[i] = ((char *)*pc)[i];
+myop[lim] = '\0';
+
+*pc++;
+nvo->value = myop;
+nvo->type = 1;
+*stackp = nvo;
+stackp++;
+}
+
+ado( )	
+{
+NodoArb *nvo;
+nvo = (NodoArb *)malloc(sizeof(NodoArb));
+if(!nvo) {
+	puts("no hay memoria para crear NodoL");
+}
+
+
+
+char *myop;
+int lim = strlen((char*) *pc);
+int i;
+myop = (char *) malloc(sizeof (char) * lim);
+for (i = 0; i < lim; ++i) myop[i] = ((char *)*pc)[i];
+myop[lim] = '\0';
+*pc++;
+
+nvo->der = pop();
+if (myop[0] == '~') nvo->izq = NULL;
+else nvo->izq = pop();
+nvo->value = myop;
+nvo->type = 2;
+*stackp = nvo;
+
+stackp++;
+
+} 
+
+
+void imprimeArb(NodoArb *raiz){
+   if(!raiz) return;
+   imprimeArb(raiz->izq);
+   printf("ima: %s\n", raiz->value);
+   imprimeArb(raiz->der);       
+}
+
+
+int isLeaf(NodoArb *raiz) { return ((int)((!(raiz->izq)) && (!((raiz->der))))); }
+
+void labeling(NodoArb *raiz){
+   if(!raiz) return;
+   labeling(raiz->izq);
+   if (isLeaf(raiz)) {
+	   int j = 0;
+	   Symbol *sm = getSymList();
+	   for (j = 0; j <= tot; ++j, sm = sm->next) if (j == (tot - symid)) raiz->value = sm->name; 
+	   symid++;
+   } 
+   
+   labeling(raiz->der);       
+}
+
+
+
+int operacion(char op, bool a, bool b){
+	if (op == '|') return a || b;
+	if (op == '^') return a && b;
+	return !b;
+}
+
+bool evaluaArb(NodoArb *raiz) {
+	if (!raiz) return 0;
+	
+	if (isLeaf(raiz)) {
+		if (raiz->type) return (lookup(raiz->value))->val;
+		return (raiz->value)[0] == 'T';
+	}
+	return operacion((raiz->value)[0], evaluaArb(raiz->izq), evaluaArb(raiz->der));
+}
+
+imp() {
+	
+	
+	NodoArb* raiz = stack[0];
+	symid = 0;
+	tot = 0;
+	Symbol * sp = getSymList();
+	for (; sp != (Symbol *)0; sp = sp->next) tot++; 
+	tot--;
+	labeling(raiz);
+	imprimeArb(raiz);
+	
+	int manysymbs = 0;
+	Symbol *it;
+	int wdt = 15, ind;
+	for (it = getSymList(); it != (Symbol *)0; it = it->next, ++manysymbs) {
+	    printf("%s", it->name);
+		for (ind = 0; ind < wdt - strlen(it->name); ++ind) printf(" ");
+	}
+	printf("RESULTADO:\n");
+	int lim = (1 << manysymbs), id = 1;
+	for (id = 1; id <= lim; ++id) {
+		
+		for (it = getSymList(); it != (Symbol *)0; it = it->next) {
+			printf("%c", (it->val)?'T':'F');
+			for (ind = 0; ind < wdt - 1; ++ind) printf(" ");
+		}
+		printf("%c\n", ((evaluaArb(raiz))?'T':'F'));
+		
+		
+		int cnt = 0;
+		for (it = getSymList(); it != (Symbol *)0; it = it->next) it->val = (id >> (manysymbs - ++cnt)) & 1;
+	}
+}
+
+
+Inst   *code(Inst f) 
+{
+Inst *oprogp = progp;
+	if (progp >= &prog [ NPROG ]) {
+		puts("Program Too Big");
+		
+	}
+	*(progp++) = f;
+	int i = 0;
+	
+	
+	
+	
+	return oprogp;
+}
+
+Inst   *codes(char* f) 
+{
+Inst *oprogp = progp;
+	if (progp >= &prog [ NPROG ]) {
+		puts("Program Too Big");
+		hola 
+	}
+	*progp = f;
+	;
+	progp++;
+	
+	
+	
+	
+	return oprogp;
+}
+
+
+execute()	
+{
+	int i = 0;
+
+for  (pc  =  prog;   *pc != STOP; ) {
+	(*(*pc++))();
+	
+}
+}
