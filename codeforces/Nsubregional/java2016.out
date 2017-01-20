@@ -1,0 +1,10 @@
+a = ? max ?
+b = a / a
+c = b + b
+d = c + c
+e = d + d
+f = e + e
+g = f + f
+h = g + g
+i = h + h
+( a + c + d + g + h ) / a
