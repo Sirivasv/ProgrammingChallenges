@@ -47,4 +47,4 @@ res = str(res)
 if (res[-1] == 'L'):
     print res[:-1]
 else:
-    print res
+    print P
