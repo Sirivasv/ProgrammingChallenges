@@ -19,4 +19,4 @@ int main() {
 		for (int j = limH - 1; j >= 0; --j) memo[j][i] = min(memo[j + 1][i] + ((i + 1) * corteH[j]), memo[j][i + 1] + ((j + 1) * corteV[i]));
 	cout << memo[0][0] << '\n';
 	return 0;
-}
+} 

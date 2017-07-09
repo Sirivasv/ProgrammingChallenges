@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAXN = 100009;
+const int MAXN = 100009; 
 
 int BIT[MAXN];
 
@@ -63,4 +63,4 @@ int main() {
 	cout << val << '\n';
 	
 	return 0;
-}
+} 

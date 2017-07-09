@@ -39,4 +39,4 @@ int main() {
 	}
 	cout << Query(MAXS - 1, K) << '\n';
 	return 0;
-}
+} 

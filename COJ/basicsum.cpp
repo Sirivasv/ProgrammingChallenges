@@ -23,4 +23,4 @@ int main() {
 		cout << (arr[J] - arr[I - 1]) << '\n';
 	}
 	return 0;
-}
+} 

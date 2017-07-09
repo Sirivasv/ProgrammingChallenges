@@ -14,4 +14,4 @@ int main() {
 	for (int i = 1; i <= 20; ++i)
 		cout << arr[i]  << ' ' << (arr[i] - arr[i - 1])<< '\n';
 	return 0;
-}
+} 

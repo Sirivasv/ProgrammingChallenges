@@ -24,4 +24,4 @@ int main() {
 	}
 	cout << DP(1, S) << '\n'; 
 	return 0;
-}
+} 

@@ -18,4 +18,4 @@ int main() {
 	cin >> s >> ss;
 	cout << DP() << '\n';
 	return 0;
-}
+} 

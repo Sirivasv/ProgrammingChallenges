@@ -26,4 +26,4 @@ int main() {
 		}
 	cout << memo[1][S] << '\n'; 
 	return 0;
-}
+} 
