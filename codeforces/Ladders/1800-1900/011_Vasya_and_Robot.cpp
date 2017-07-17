@@ -1,3 +1,4 @@
+//Div 1 - A / Brute force Greedy
 #include <bits/stdc++.h>
 using namespace std;
 
