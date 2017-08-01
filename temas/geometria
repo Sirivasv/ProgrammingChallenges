@@ -1,0 +1,45 @@
+R2
+O origen
+x & y son ejes sistema coordenado
+punto A en el plano esta definido como ax y ay
+dist(A, B) = sqrt(((by - ay) ^ 2) + ((bx - ax) ^ 2));
+dist(entre rectas) si chocan 0, else punto a recta
+
+n puntos diferentes 
+p1, ... , pn
+conjuntos segmentos  [pi, pi+1] para todo i = 1, ..., n - 1
+y el segmento [pn, p1] forma un camino cerrado B
+
+Sea I la region encerrada por B excluyendo a B
+
+sea P B U I nos referimos a P como poligono B, su borde e I su interior decimos que p1, ... , pn determina P
+
+un punto pi es un vértice de P y un segmento de recta e = [pi, pj]  e C B es un lado o arista
+
+Un poligono con n vertices puede ser llamado n-agono
+
+Un poligono simple es un poligono tal que sus lados nunca se intersectan exeptuando los que comparten un vertice
+
+un poligono convexo es un poligono simple P tal que cumple 
+
+Forma  estandar todos los puntos son diferentes no hay 3 puntos colineales
+
+ROTATING CALLIPERS
+
+-- Diametro de un poligono
+Distancia mas grande entre dos puntos p y a que pertenecen a un poligono convexo
+Diam(P) =  max {dist(p, q)}
+			p,q e P
+
+Sea p un poligono convexo [p1, ..., pn]
+Def. Una recta L es una recta de soporte para P intersecta P y el interior de P permanece solo de 1 lado de L.
+
+Def. Dado un par de vertices p,q E P, es llamado anti-podal si p & q admiten rectas de soporte paralelas
+
+El diametro de P es la dist. mas grande entre lineas paralelas de soporte de P
+
+agarras el primer punto antipodal que es de todos los puntos con una recta el mas largo, 
+
+Apertura mas pequena por la que podria deslizar el poligono 
+
+El ancho del poligno es la distancia minima entre lineas de soporte paralelea pasando por  un par de verice arista

@@ -1,0 +1,88 @@
+conjunto de naturales, N = 1, 2, 3, ..., INF;
+conjunto de enteros, Z = MINF, -1, 0, 1, INF;
+conjunto de Racinales, Q = Z / Z;
+conjunto de Irracionales, I = pi, e, ((2) ** (0.5))
+conjunto de Complejos, a + ib; ordenar por magnitudes;
+
+((e) ** (i * TETA)) = cos(TETA) + isen(TETA);
+
+raices unitarias (raices de unidad)
+
+((Z) ** n) = 1 
+
+todos los n que lo satisfagan son raices unitarias;
+Va a tener N soluciones, por que un polinomio de grado n, tiene n soluciones;
+
+Z ** 3 = 1
+
+1 ** 3 = 1
+(-(1/2) - i ((3 ** 0.5) / 2)) ** 3 = 1
+(-(1/2) + i ((3 ** 0.5) / 2)) ** 3 = 1
+
+Z
+ ** 4 = 1;
+
+1 ** 4 = 1;
+-1 ** 4 = 1;
+i ** 4 = 1;
+-i ** 4 = 1;
+
+Con la formula
+
+for (k = 0; k < n; k++)
+	(e ** ((2 * PI * i * K) / (n)))
+
+forman un poligono regular en el circulo de magnitud 1
+
+w (omega) = (e ** ((2 * PI * i) / (n)))
+
+w dk, dn = wn ** k
+
+w n/2, n = w2 = -1
+
+(w k, n) ** 2 = (w n/2) ** k = ((wn) ** (k + n/2)
+
+
+en polinomios ai ** xi
+
+evaluarlos O(N)
+suma O(N)
+multiplicacion O(N ** 2) ->>IT CAN BE BETTER ?
+
+
+Rep punto-valor
+A(x) = {(x0, y0), (x1, y1), ..., (xn, yn)}
+
+yk = A(xk) & todas las x son diferentes
+
+
+(
+	1 ...  x ... xn-1
+	1 ...  x ... xn-1
+	.
+	.
+	.
+	1             xn- 1;
+)                            (a0, a1, ..., an) 
+=                            (y0, y1, ..., yn )
+
+
+
+PV -> coeficientes (Interpolacion) O (N ** 2)
+PV <- coeficientes O (N ** 2)
+
+
+A -1 B = c
+
+
+evaluarlos O(N ** 2) //NO se puede enrealidad
+suma O(N)
+multiplicacion O(N) 
+
+FFT solo en potencias de 2 //Acompletar
+
+A(X) = coeficientes;
+E(Z) = coeficientes pares
+O(W) = coeficientes impares 
+
+A(X) = E(X^2) + X O(X ^ 2);
