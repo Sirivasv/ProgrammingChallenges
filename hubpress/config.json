@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "username": "sirivasv",
+    "repositoryName": "ProgrammingChallenges",
+    "branch": "master"
+  },
+  "theme": {
+    "name": "casper"
+  },
+  "urls": {
+    "site": "https://sirivasv.github.io",
+    "hubpress": "http://104.131.58.234:88",
+    "theme": "//sirivasv.github.io/themes/casper",
+    "images": "https://sirivasv.github.io/images"
+  },
+  "initialisationConfigComponent": {
+    "name": "initialise-configuration",
+    "computed": {},
+    "methods": {},
+    "staticRenderFns": [
+      null,
+      null,
+      null
+    ],
+    "_Ctor": {}
+  }
+}
