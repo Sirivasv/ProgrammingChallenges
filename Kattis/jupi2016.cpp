@@ -1,97 +1,91 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-typedef int Dato;
-typedef vector<Dato> Vec;
-typedef vector<Vec> Mat;
+typedef int Flujo;
+typedef int Costo;
 typedef vector<int> Lista;
+typedef pair<int, int> Par;
+typedef vector<Flujo> Flujo1D;
+typedef vector<Flujo1D> Flujo2D;
+const Flujo FINF = 1000000009;
+const Flujo FMAX = 1e8;
 
-const Dato INF = 1090000000;
-const int MAXN = 109;
-
-struct Flujo {
-	int n;
-	Lista padre;
-	Mat cap, flujo;
-	vector<Dato> dist;
-	vector<Lista> aristas;
-	Flujo(int N) : dist(N), padre(N), aristas(N), cap(N, Vec(N)), flujo(N, Vec(N)), n(N) {}
-	
-	inline void AgregarArista(int u, int v, Dato c) {
-		flujo[v][u] += c;
-		cap[u][v] += c, cap[v][u] += c;
-		aristas[u].push_back(v);
-		aristas[v].push_back(u);
-	}
-	
-	Dato ActualizarFlujo(int u, Dato f) {
-        int p = padre[u];
-        if (p == u) return f;
-        f = ActualizarFlujo(p, min(f, cap[p][u] - flujo[p][u]));
-        flujo[p][u] += f;
-        flujo[u][p] -= f;
-        return f;
+struct GrafoFlujo{
+    struct AristaFlujo {
+        int dst; AristaFlujo* residual;
+        Flujo cap, flujo; 
+        AristaFlujo(int d, Flujo f, Flujo c) : dst(d), flujo(f), cap(c) {}
+        void AumentarFlujo(Flujo f) {
+            residual->flujo -= f;
+            this->flujo += f;            
+        } 
+    };
+    int n; Lista dist , iter;
+    vector< vector<AristaFlujo*> > aristas;
+    GrafoFlujo(int N) : n(N), aristas(N), dist(N), iter(N) {}
+    ~GrafoFlujo() {
+        for(int i = 0; i < n; ++i)
+            for (int j = 0; j < aristas[i].size(); ++j)
+                delete aristas[i][j];
+    }
+    
+    void AgregarArista(int u, int v, Flujo c, Costo p = 0) {
+        AristaFlujo* uv = new AristaFlujo(v, 0, c);
+        AristaFlujo* vu = new AristaFlujo(u, c, c);
+        uv->residual = vu, vu->residual = uv;        
+        aristas[u].push_back(uv);
+        aristas[v].push_back(vu);
     }
 
-    Dato AumentarFlujo(int s, int t) {
-        fill(padre.begin(), padre.end(), -1);
-        queue<int> q; q.push(s); padre[s] = s;
-        while (!q.empty()) {
-            int u = q.front();
-            q.pop(); if (u == t) break;
-            for (int i = 0; i < aristas[u].size(); ++i) {
-                int v = aristas[u][i];
-                if (flujo[u][v] == cap[u][v] ||
-                    padre[v] != -1) continue;
-                padre[v] = u, q.push(v);
+    Flujo FlujoBloqueante(int u, int t, Flujo f) {        
+        if (u == t) return f;
+        for (int &i = iter[u] ; i < aristas[u].size(); ++i) {            
+            AristaFlujo* v = aristas[u][i];
+            if (v -> cap - v -> flujo > 0 && dist[u] + 1 == dist[v->dst]) {
+                Flujo fv = FlujoBloqueante(v->dst, t, min(f, v->cap - v->flujo));
+                if(fv > 0 ){
+                    v->AumentarFlujo(fv);
+                    return fv;
+                }
             }
         }
-        if (padre[t] == -1) return 0;
-        return ActualizarFlujo(t, INF);
+        return 0;
     }
-
-    Dato EdmondsKarp(int s, int t) {
-        Dato flujo_maximo = 0, f;
-        while (f = AumentarFlujo(s, t))
-            flujo_maximo += f;
+    
+    Flujo Dinic(int s, int t) {
+        Flujo flujo_maximo = dist[t] = 0;
+        while (dist[t] < INT_MAX) {
+            fill(dist.begin(), dist.end(), INT_MAX);
+            queue<int> q; q.push(s); dist[s] = 0;
+            while (!q.empty()) {
+                int u = q.front(); q.pop();
+                for (int i = 0; i < aristas[u].size(); ++i) {
+                
+                    AristaFlujo* v = aristas[u][i];
+                    if (dist[v->dst] < INT_MAX) continue;
+                    if (v->flujo == v->cap) continue;
+                    dist[v->dst] = dist[u] + 1;
+                    q.push(v->dst);
+                    
+                }
+            }
+            if (dist[t] < INT_MAX){
+                Flujo fluido;
+                iter.assign(n, 0);
+                while((fluido = FlujoBloqueante(s, t, FINF)) != 0){                    
+                    
+                    flujo_maximo += fluido;
+                }
+            }
+        }
         return flujo_maximo;
     }
-
-	inline Dato FlujoBloqueante(int u, int t, Dato f) {
-		if (u == t) return f; Dato fluido = 0;
-		for (int i = 0; i < aristas[u].size(); ++i) {
-			if (fluido == f) break;
-			int v = aristas[u][i];
-			if (dist[u] + 1 > dist[v]) continue;
-			Dato fv = FlujoBloqueante(v, t, min(f - fluido, cap[u][v] - flujo[u][v]));
-			flujo[u][v] += fv, fluido += fv;
-			flujo[v][u] -= fv;
-		}
-		return fluido;
-	}
-
-	Dato Dinic(int s, int t) {
-		Dato flujo_maximo = dist[t] = 0;
-		while(dist[t] < INF) {
-			fill(dist.begin(), dist.end(), INF);
-			queue<int> q; q.push(s); dist[s] = 0;
-			while (!q.empty()) {
-				int u = q.front(); q.pop();
-				for (int i = 0; i < aristas[u].size(); ++i) {
-					int v = aristas[u][i];
-					if (flujo[u][v] == cap[u][v] || dist[v] <= dist[u] + 1)
-						continue;
-					dist[v] = dist[u] + 1, q.push(v);
-				}
-			}
-			if (dist[t] < INF) flujo_maximo += FlujoBloqueante(s, t, INF);
-		}
-		return flujo_maximo;
-	}
+    
+    
 };
 
 int toQ[MAXN];
-Dato capQ[MAXN], sumQ[MAXN];
+Flujo capQ[MAXN], sumQ[MAXN];
 
 int main() {
 	cin.tie(0); ios_base::sync_with_stdio(0);
@@ -100,7 +94,7 @@ int main() {
 
 	cin >> N >> Q >> S;
 
-	Dato sum = 0;
+	Flujo sum = 0;
 
 	for (int i = 1; i <= S; ++i) cin >> toQ[i];
 	for (int i = 1; i <= Q; ++i) cin >> capQ[i];
@@ -110,7 +104,7 @@ int main() {
 	int FD = lim * 2;
 	int limT = FD + N + 1;
 	
-	Flujo myF(limT + 1);
+	GrafoFlujo myF(limT + 1);
 
 	//cout << limT << " LT\n";
 
@@ -132,10 +126,10 @@ int main() {
 	}
 
 	for (int i = 1; i <= N; ++i) {
-		Dato diCap;
+		Flujo diCap;
 		cin >> diCap;
 		for (int j = 1; j <= S; ++j) {
-			Dato siCap;
+			Flujo siCap;
 			cin >> siCap;
 			sum += siCap;
 			int nodo = (Q * (i - 1)) + toQ[j];
@@ -156,7 +150,7 @@ int main() {
 		//cout << "NODO2: " << (FD + i) << " -- " << diCap << "-->" << "T: " << (limT) << '\n';
 	}
 
-	Dato res = myF.EdmondsKarp(0, limT);
+	Flujo res = myF.EdmondsKarp(0, limT);
 
 	//cout << res << ' ' << sum << '\n';
 	if (sum == res) cout << "possible\n";
