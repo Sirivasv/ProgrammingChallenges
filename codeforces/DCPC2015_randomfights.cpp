@@ -1,42 +1,34 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAXN = 20;
+typedef double Double;
+
+const int MAXN = 25;
 const int FULL_MASK = (1 << 20);
 
-double mat[MAXN][MAXN];
-double memo[FULL_MASK];
-int vis[FULL_MASK], ID, N, CURRID;
+Double mat[MAXN][MAXN];
+Double memo[FULL_MASK];
+int N;
+vector<int> vec[MAXN];
 
-double DP(int msk) {
+void DP(int cnt) {
+	
+	if (cnt == 1) return; 
 
-	if ((msk & (1 << CURRID)) == 0) return 0;
-	if ((msk & (1 << CURRID)) == msk) return 1;
-	if (vis[msk] == ID) return memo[msk];
-
-	vis[msk] = ID;
-
-	double cnt = 0;
-	for (int i = 0; i < N; ++i) {
-		for (int j = i + 1; j < N; ++j) {
-			if ((msk & (1 << i)) && (msk & (1 << j))) {
-				cnt += 1.0;
+	for (int nv = 0; nv < vec[cnt].size(); ++nv) {
+		Double prob = 2.0 / (Double(cnt) * (Double(cnt) - 1.0));
+		int msk = vec[cnt][nv];
+		for (int i = 0; i < N; ++i) {
+			for (int j = i + 1; j < N; ++j) {
+				if ((msk & (1 << i)) && (msk & (1 << j))) {
+					memo[msk & ~(1 << j)] += memo[msk] * prob * mat[i][j];
+					memo[msk & ~(1 << i)] += memo[msk] * prob * mat[j][i];
+				}
 			}
 		}
 	}
 
-	cnt = 1.0 / cnt;
-	double res = 0;
-	for (int i = 0; i < N; ++i) {
-		for (int j = i + 1; j < N; ++j) {
-			if ((msk & (1 << i)) && (msk & (1 << j))) {
-				res += cnt * mat[i][j] * DP(msk & ~(1 << j));
-				res += cnt * mat[j][i] * DP(msk & ~(1 << i));
-			}
-		}
-	}	
-
-	return memo[msk] = res;
+	DP(cnt - 1);
 }
 
 int main() {
@@ -50,15 +42,33 @@ int main() {
 			for (int j = 0; j < N; ++j) {
 				cin >> mat[i][j];
 			}
+			vec[i].clear();
+			vec[i + 1].clear();
 		}
+
+
+		for (int i = 0; i < FULL_MASK; ++i) {
+			memo[i] = 0;
+			int subcnt = 0;
+			for (int j = 0; j < N; ++j) {
+				if (i & (1 << j)) {
+					subcnt++;
+				}
+			}
+			if (i <= ((1 << N) - 1)) {
+				vec[subcnt].push_back(i);
+			}
+		}
+
+		memo[(1 << N) - 1] = 1.0;
+		DP(N);
+
 		cout << "Case " << nc << ":";
 		for (int i = 0; i < N; ++i) {
 			cout << ' ';
-			CURRID = i;
-			ID++;
-			cout << fixed << setprecision(9) << DP((1 << N) - 1);
+			cout << fixed << setprecision(6) << memo[(1 << i)];
 		}
-		cout << '\n';
+		cout <<  '\n';
 	}
 
 	return 0;
