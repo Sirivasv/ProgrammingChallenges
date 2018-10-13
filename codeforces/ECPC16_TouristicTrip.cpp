@@ -29,7 +29,7 @@ int main() {
 				fin >> sendCard[i][j];
 			}
 		}
-
+    
 		for (int i = 0; i < K; ++i) { fin >> sentCards[i]; }
 
 		for (int i = 0; i < MAXN; ++i)
