@@ -22,8 +22,8 @@ pii getDivs(int xi) {
 }
 
 int main() {
-    // cin.tie(0);
-    // ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    ios_base::sync_with_stdio(0);
 
     int T;
     cin >> T;
@@ -37,8 +37,11 @@ int main() {
 
         pii firstNumbers = getDivs(second_arr[0]);
         // cout << firstNumbers.first << ' ' << firstNumbers.second << '\n';
+        
+        int failed = 0;
         if ((second_arr[1] % firstNumbers.first) == 0) swap(firstNumbers.first, firstNumbers.second);
         // cout << firstNumbers.first << ' ' << firstNumbers.second << '\n';
+        
         primes_used_relative.push_back(firstNumbers.first);
         primes_used[firstNumbers.first] = 1;
         primes_used_relative.push_back(firstNumbers.second);
@@ -46,11 +49,42 @@ int main() {
 
         int current_last = firstNumbers.second;
         for (int j = 1; j < L; ++j) {
-            current_last = second_arr[j] / current_last;
+            if (second_arr[j] > current_last) {
+                current_last = second_arr[j] / current_last;
+            } else {
+                failed = 1;
+                break;
+                current_last = current_last / second_arr[j];
+            }
+            
             primes_used_relative.push_back(current_last);
             primes_used[current_last] = 1;
             // cout << current_last << ' ';
         }
+
+        if (failed) {
+
+            primes_used.clear();
+            primes_used_relative.clear();
+            swap(firstNumbers.first, firstNumbers.second);
+            // cout << firstNumbers.first << ' ' << firstNumbers.second << '\n';
+            
+            primes_used_relative.push_back(firstNumbers.first);
+            primes_used[firstNumbers.first] = 1;
+            primes_used_relative.push_back(firstNumbers.second);
+            primes_used[firstNumbers.second] = 1;
+
+            int current_last = firstNumbers.second;
+            for (int j = 1; j < L; ++j) {
+                current_last = second_arr[j] / current_last;
+                primes_used_relative.push_back(current_last);
+                primes_used[current_last] = 1;
+                // cout << current_last << ' ';
+            }
+
+
+        }
+
         // cout << '\n';
 
         int many_primes = 0;
