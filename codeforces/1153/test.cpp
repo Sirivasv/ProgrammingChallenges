@@ -8,7 +8,7 @@ int main() {
     int T;
     cin >> T;
 
-    cout << (T + 5) << '\n';
+    cout << (T + 7) << '\n';
 
     return 0;
 }
