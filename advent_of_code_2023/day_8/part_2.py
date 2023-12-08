@@ -1,8 +1,39 @@
 import sys
+from math import lcm
 
 adj_list = {}
 
+path_lengths = []
+
 instruction_sequence = "" 
+
+def get_path_length(start_node_id):
+
+  step_id_counter = 0
+  step_id = 0
+
+  next_move = 1 
+  if instruction_sequence[step_id] == "L":
+    next_move = 0
+
+  curr_node = adj_list[start_node_id][next_move]
+
+  step_id_counter = 1
+  visited = {}
+  visited[start_node_id] = 1
+  while True:
+    step_id = step_id_counter % len(instruction_sequence)
+
+    if curr_node[2] == "Z":
+      return step_id_counter
+
+    next_move = 1 
+    if instruction_sequence[step_id] == "L":
+      next_move = 0
+    curr_node = adj_list[curr_node][next_move]
+
+    step_id_counter += 1
+
 
 for line in sys.stdin:
   curr_line = line.rstrip()
@@ -24,33 +55,11 @@ next_node_list = []
 
 for node_id in adj_list:
   if node_id[2] == "A":
-    curr_node_list.append("{}".format(node_id))
+    path_lengths.append(get_path_length(node_id))
+# print(path_lengths)
+curr_lcm = path_lengths[0]
 
-next_node_list = []
+for path_length in path_lengths:
+  curr_lcm = lcm(curr_lcm, path_length)
 
-while True:
-  step_id = step_id_counter % len(instruction_sequence)
-  
-  all_end_in_z = True
-  for curr_node in curr_node_list:
-    if curr_node[2] != "Z":
-      all_end_in_z = False
-  
-  if all_end_in_z:
-    many_steps = step_id_counter
-    break
-  
-  next_node_list = []
-  for curr_node in curr_node_list:
-    next_move = 1 
-    if instruction_sequence[step_id] == "L":
-      next_move = 0
-    print(adj_list[curr_node][next_move])
-    next_node_list.append("{}".format(adj_list[curr_node][next_move]))
-  print(step_id)
-  print(step_id_counter)
-  print("-+---")
-  curr_node_list = next_node_list
-  step_id_counter += 1
-
-print(many_steps)
+print(curr_lcm)
