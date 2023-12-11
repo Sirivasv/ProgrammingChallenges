@@ -171,112 +171,136 @@ def is_inside(start_i, start_j, cycle_map):
   many_odd = 0
   many_cycle_pipes_up = 0
 
-  found_cycle_pipe = 0
+  found_cycle_pipe = 0.0
   many_found_cycle_pipes = 0
+  curr_opener = ""
   for i in range(0, start_i + 1):
+    i = start_i - i
     if cycle_map[i][start_j] == 1:
       found_cycle_pipe = 1
-    if cycle_map[i][start_j] == 1 and pipe_map[i][start_j] == "-":
-      many_cycle_pipes_up += 1
-    
-  if many_cycle_pipes_up % 2 == 1:
+    if cycle_map[i][start_j] == 1:
+      if pipe_map[i][start_j] == "-":
+        many_cycle_pipes_up += 1.0
+      elif pipe_map[i][start_j] == "F":
+        if curr_opener == "J":
+          many_cycle_pipes_up += 1.0
+      elif pipe_map[i][start_j] == "7":
+        if curr_opener == "L":
+          many_cycle_pipes_up += 1.0
+      elif pipe_map[i][start_j] == "L" or pipe_map[i][start_j] == "J":
+        curr_opener = pipe_map[i][start_j]
+
+  if int(many_cycle_pipes_up) % 2 == 1:
     many_odd += 1
+  
+  if found_cycle_pipe == 0:
+    return False
 
   many_found_cycle_pipes += found_cycle_pipe
   found_cycle_pipe = 0
 
-  many_cycle_pipes_down = 0
+  many_cycle_pipes_down = 0.0
   for i in range(start_i, len(cycle_map)):
     if cycle_map[i][start_j] == 1:
       found_cycle_pipe = 1
-    if cycle_map[i][start_j] == 1 and pipe_map[i][start_j] == "-":
-      many_cycle_pipes_down += 1
-
-  if many_cycle_pipes_down % 2 == 1:
+    if cycle_map[i][start_j] == 1:
+      if pipe_map[i][start_j] == "-":
+        many_cycle_pipes_down += 1.0
+      elif pipe_map[i][start_j] == "L":
+        if curr_opener == "7":
+          many_cycle_pipes_down += 1.0
+      elif pipe_map[i][start_j] == "J":
+        if curr_opener == "F":
+          many_cycle_pipes_down += 1.0
+      elif pipe_map[i][start_j] == "7" or pipe_map[i][start_j] == "F":
+        curr_opener = pipe_map[i][start_j]
+  # print("--{}".format(many_cycle_pipes_up))  
+  if int(many_cycle_pipes_down) % 2 == 1:
     many_odd += 1
   
+  if found_cycle_pipe == 0:
+    return False
+
   many_found_cycle_pipes += found_cycle_pipe
   found_cycle_pipe = 0
+  
+  many_odd_up_down = many_odd
 
-  many_cycle_pipes_left = 0
+  many_odd = 0
+
+  many_cycle_pipes_left = 0.0
   for j in range(0, start_j + 1):
+    j = start_j - j
     if cycle_map[start_i][j] == 1:
       found_cycle_pipe = 1
-    if cycle_map[start_i][j] == 1 and pipe_map[start_i][j] == "|":
-      many_cycle_pipes_left += 1
+    if cycle_map[start_i][j] == 1:
+      if pipe_map[start_i][j] == "|":
+        many_cycle_pipes_left += 1.0
+      elif pipe_map[start_i][j] == "F":
+        if curr_opener == "J":
+          many_cycle_pipes_left += 1.0
+      elif pipe_map[start_i][j] == "L":
+        if curr_opener == "7":
+          many_cycle_pipes_left += 1.0
+      elif pipe_map[start_i][j] == "7" or pipe_map[start_i][j] == "J":
+        curr_opener = pipe_map[start_i][j]
   
-  if many_cycle_pipes_left % 2 == 1:
+  if int(many_cycle_pipes_left) % 2 == 1:
     many_odd += 1
   
+  if found_cycle_pipe == 0:
+    return False
+
   many_found_cycle_pipes += found_cycle_pipe
   found_cycle_pipe = 0
   
-  many_cycle_pipes_right = 0
+  many_cycle_pipes_right = 0.0
   for j in range(start_j, len(cycle_map[start_i])):
     if cycle_map[start_i][j] == 1:
       found_cycle_pipe = 1
-    if cycle_map[start_i][j] == 1 and pipe_map[start_i][j] == "|":
-      many_cycle_pipes_right += 1
+    if cycle_map[start_i][j] == 1:
+      if pipe_map[start_i][j] == "|":
+        many_cycle_pipes_right += 1.0
+      elif pipe_map[start_i][j] == "J":
+        if curr_opener == "F":
+          many_cycle_pipes_right += 1.0
+      elif pipe_map[start_i][j] == "7":
+        if curr_opener == "L":
+          many_cycle_pipes_right += 1.0
+      elif pipe_map[start_i][j] == "F" or pipe_map[start_i][j] == "L":
+        curr_opener = pipe_map[start_i][j]
   
-  if many_cycle_pipes_right % 2 == 1:
+  if int(many_cycle_pipes_right) % 2 == 1:
     many_odd += 1
   
+  if found_cycle_pipe == 0:
+    return False
+
   many_found_cycle_pipes += found_cycle_pipe
   found_cycle_pipe = 0
+  
+  many_odd_left_right = many_odd
+  # print(many_odd_up_down)
+  # print(many_odd_left_right)
+  # print("----")
+  if (many_odd_up_down + many_odd_left_right) == 4:
+    return True
 
-  if not many_odd >= 1:
-    return False
+  return False
 
-  if many_found_cycle_pipes != 4:
-    # print("({}, {})".format(start_i, start_j))
-    # print(many_found_cycle_pipes)
-    return False
-
-  return True
-
-inside_visited = []
 def check_many_inside(cycle_map):
   inside_tiles = 0
-  inside_visited = []
-  for i in range(0, len(cycle_map)):
+  # for i in range(0, len(cycle_map)):
     # print(cycle_map[i])
-    inside_visited.append([])
-    for j in range(0, len(cycle_map[i])):
-      inside_visited[i].append(False)
+  # print(pipe_map[starting_pos[0]][starting_pos[1]])
   for i in range(0, len(cycle_map)):
     for j in range(0, len(cycle_map[i])):
-      if cycle_map[i][j] == 0 and (not inside_visited[i][j]):
+      if cycle_map[i][j] == 0:
+        # print("({}, {}) = {}".format(i, j, pipe_map[i][j]))
         if is_inside(i,j, cycle_map):
-          # print("({}, {})".format(i, j))
-          inside_tiles += count_inside_tiles_in_block(i, j, inside_visited, cycle_map)
+          # print("({}, {}) = {}".format(i, j, pipe_map[i][j]))
+          inside_tiles += 1
   print(inside_tiles)
-
-def count_inside_tiles_in_block(start_inside_i, start_inside_j, inside_visited, cycle_map):
-
-  curr_positions = [[start_inside_i, start_inside_j]]
-  next_positions = []
-  many_inside = 1
-  inside_visited[start_inside_i][start_inside_j] = True
-  while len(curr_positions) > 0:
-    # print("OHNO")
-    next_positions = []
-    
-    for curr_position in curr_positions:
-      
-      directions = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, 1], [-1, 1], [1, -1]]
-
-      for direction in directions:
-        next_i = curr_position[0] + direction[0]
-        next_j = curr_position[1] + direction[1]
-        if next_i >= 0 and next_i < len(pipe_map) and next_j >= 0 and next_j < len(pipe_map[next_i]) and cycle_map[next_i][next_j] == 0:
-          if not inside_visited[curr_position[0]][curr_position[1]]:
-            inside_visited[curr_position[0]][curr_position[1]] = True
-            next_positions.append([next_i, next_j])
-            many_inside += 1
-      
-    curr_positions = next_positions
-  
-  return many_inside
 
 for i in range(0, len(pipe_map)):
   for j in range(0, len(pipe_map[i])):
