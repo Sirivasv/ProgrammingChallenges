@@ -47,6 +47,12 @@ for pos_i in range(global_min_i, global_max_i + 1):
     support_base[pos_i].append([-1, 0])
 
 will_support_alone = {}
+is_supporting = []
+is_supported = []
+for brick_id in range(len(bricks)):
+  is_supported.append({})
+  is_supporting.append({})
+
 for brick_id in range(len(bricks)):
   brick = bricks[brick_id]
   curr_min_i = min(brick[0][2], brick[1][2])
@@ -76,6 +82,10 @@ for brick_id in range(len(bricks)):
   if (max_height > 0) and (len(max_height_support_bases) == 1):
     for support_brick_id in max_height_support_bases:
       will_support_alone[support_brick_id] = 1
+  if (max_height > 0):
+    for support_brick_id in max_height_support_bases:
+      is_supporting[support_brick_id][brick_id] = 1
+      is_supported[brick_id][support_brick_id] = 1
   
   for pos_i in range(curr_min_i, curr_max_i + 1):
     for pos_j in range(curr_min_j, curr_max_j + 1):
@@ -84,9 +94,44 @@ for brick_id in range(len(bricks)):
       support_base[pos_i][pos_j][0] = brick_id
       support_base[pos_i][pos_j][1] = max_height + curr_height
 
-print(will_support_alone)
-final_sum = len(bricks)
+def climb_bricks(origin_brick_id):
+  brick_fell = []
+  for brick_id in range(len(bricks)):
+    brick_fell.append(False)
+
+  curr_climb_bricks = []
+  brick_fell[origin_brick_id] = True
+  for brick_receiving_support_id in is_supporting[origin_brick_id]:
+    curr_climb_bricks.append(brick_receiving_support_id)
+  # print("{} ++".format(origin_brick_id))
+  while len(curr_climb_bricks) > 0:
+
+    curr_climb_brick_id = curr_climb_bricks[0]
+    curr_climb_bricks = curr_climb_bricks[1:]
+    
+    brick_will_fall = True
+    for brick_bringing_support_id in is_supported[curr_climb_brick_id]:
+      if not brick_fell[brick_bringing_support_id]:
+        # print("{} --".format(curr_climb_brick_id))
+        brick_will_fall = False
+    
+    if brick_will_fall:
+      # print(curr_climb_brick_id)
+      # print("====")
+      brick_fell[curr_climb_brick_id] = True
+      for brick_receiving_support_id in is_supporting[curr_climb_brick_id]:
+        curr_climb_bricks.append(brick_receiving_support_id)
+  # print("***")
+
+  curr_sum = -1
+  for brick_id in range(len(bricks)):
+    if brick_fell[brick_id]:
+      curr_sum += 1
+
+  return curr_sum
+  
+final_sum = 0
 for brick_id in range(len(bricks)):
   if brick_id in will_support_alone:
-    final_sum -= 1
+    final_sum += climb_bricks(brick_id)
 print(final_sum)
